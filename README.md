@@ -60,11 +60,15 @@ Confusion matrices are written to `results/confusion_matrix_baseline.png` and `r
 ```
 text-classifier/
 ├── README.md
+├── HOW_I_BUILT_IT.md     # how I made it (first person)
+├── BREAK_IT.md           # intentional break / diagnose / fix lab
 ├── requirements.txt
 ├── .gitignore
 ├── train.py              # baseline + DistilBERT fine-tune + metrics
 ├── app.py                # Gradio demo
 ├── explore.py            # quick EDA (class balance + a few examples)
+├── scripts/
+│   └── break_experiments.py  # safe baseline-only failure demos
 ├── results/
 │   ├── metrics.json      # filled by train.py
 │   └── *.png             # confusion matrices (gitignored)
@@ -115,6 +119,25 @@ python app.py
 Open the Gradio URL (default `http://127.0.0.1:7860`). If the model folder is missing, the UI tells you to run `train.py` first.
 
 ---
+
+
+---
+
+## Learn by breaking it
+
+I learn this project by reading how I built it, then intentionally breaking pieces and writing the what-ifs.
+
+| Doc | Purpose |
+|-----|---------|
+| [`HOW_I_BUILT_IT.md`](HOW_I_BUILT_IT.md) | First-person walkthrough: data → baseline → DistilBERT → eval → Gradio |
+| [`BREAK_IT.md`](BREAK_IT.md) | Lab guide — 13 experiments (wrong labels, tiny subset, no class weight, bad LR, …) |
+| [`scripts/break_experiments.py`](scripts/break_experiments.py) | Safe baseline-only demos (`--tiny-subset`, `--no-class-weight`, `--all`, …). **Never** deletes `models/distilbert-sms-spam/` |
+
+```bash
+source .venv/bin/activate
+python scripts/break_experiments.py --list
+python scripts/break_experiments.py --all
+```
 
 ## Requirements
 
