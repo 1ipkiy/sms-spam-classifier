@@ -1,0 +1,30 @@
+{
+  "dataset": "ucirvine/sms_spam",
+  "seed": 42,
+  "split": {
+    "train": 3901,
+    "val": 836,
+    "test": 837
+  },
+  "class_balance_full": {
+    "ham": 4827,
+    "spam": 747,
+    "total": 5574
+  },
+  "baseline": {
+    "model": "TF-IDF + LogisticRegression",
+    "accuracy": 0.980884109916368,
+    "precision": 0.9210526315789473,
+    "recall": 0.9375,
+    "f1": 0.9292035398230089
+  },
+  "distilbert": {
+    "model": "distilbert-base-uncased (fine-tuned)",
+    "accuracy": 0.992831541218638,
+    "precision": 0.9732142857142857,
+    "recall": 0.9732142857142857,
+    "f1": 0.9732142857142857,
+    "train_subset_size": 3000,
+    "epochs": 2
+  }
+}
