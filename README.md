@@ -6,7 +6,7 @@
 
 Binary text classification on SMS messages (`ham` vs `spam`), framed as a lightweight ML engineering project with a cybersecurity angle (spam / phishing-adjacent detection). Clean train → eval → demo loop with real metrics on a held-out test set.
 
-Also see [RAG Q&A with Citations](https://github.com/1ipkiy/rag-qa-with-citations) (Project 2).
+Also see [RAG Q&A with Citations](https://github.com/1ipkiy/rag-qa-with-citations) (Project 2), [Prompt Injection Detector](https://github.com/1ipkiy/prompt-injection-detector) (Project 6), and [Multimodal Phishing Vision](https://github.com/1ipkiy/multimodal-phishing-vision) (Project 7).
 
 ---
 
