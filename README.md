@@ -1,21 +1,24 @@
 # SMS Spam vs Ham Classifier
 
 **Author:** Miles Robinson · **Year:** 2026  
+**Portfolio:** Project 1 of an AI engineering series  
 **Stack:** scikit-learn · Hugging Face Transformers · DistilBERT · Gradio
 
-Binary text classification on SMS messages (`ham` vs `spam`), framed as a lightweight ML engineering project with a light cybersecurity angle (spam / phishing-adjacent message detection).
+Binary text classification on SMS messages (`ham` vs `spam`), framed as a lightweight ML engineering project with a cybersecurity angle (spam / phishing-adjacent detection). Clean train → eval → demo loop with real metrics on a held-out test set.
+
+Also see [RAG Q&A with Citations](https://github.com/1ipkiy/rag-qa-with-citations) (Project 2).
 
 ---
 
 ## Problem statement
 
-SMS spam is common, short, and noisy. The goal is to build a **reproducible** classifier that:
+SMS spam is common, short, and noisy. The goal is a **reproducible** classifier that:
 
 1. Establishes a strong classical baseline (TF-IDF + Logistic Regression)
 2. Improves on it with a fine-tuned transformer (DistilBERT)
 3. Ships a simple Gradio demo for interactive inference
 
-This is **Project 1** in an AI engineering portfolio aimed at big-tech / applied ML roles: clean code, real metrics, honest constraints (CPU training, documented subset).
+Built for applied ML / AI engineering interviews: clean code, honest CPU constraints, documented subset training, and metrics you can regenerate.
 
 ---
 
@@ -39,12 +42,13 @@ Labels: `0 = ham`, `1 = spam`.
    - Trained on a **stratified subset of 3,000** train examples for **2 epochs** so the pipeline runs on CPU in reasonable time.
    - Hyperparams: lr=2e-5, batch size=8, max length=128, warmup ratio=0.1.
 3. **Eval** — Accuracy, precision, recall, F1, and confusion matrices on the held-out test set.
+4. **Demo** — Gradio UI loads the saved DistilBERT checkpoint for live inference.
 
 ---
 
-## Results (test set)
+## Results
 
-> Numbers below come from `python train.py` on this repo (CPU). Re-run to regenerate `results/metrics.json`.
+> Numbers from `python train.py` on this repo (CPU). See `results/metrics.json`.
 
 | Model | Accuracy | Precision | Recall | F1 |
 |-------|----------|-----------|--------|-----|
@@ -53,6 +57,8 @@ Labels: `0 = ham`, `1 = spam`.
 
 Confusion matrices are written to `results/confusion_matrix_baseline.png` and `results/confusion_matrix_distilbert.png` after training.
 
+**Honesty note:** DistilBERT is trained on a 3k stratified subset so portfolio demos stay runnable without a GPU. Metrics above are still on the full held-out test split (837 examples).
+
 ---
 
 ## Project structure
@@ -60,13 +66,13 @@ Confusion matrices are written to `results/confusion_matrix_baseline.png` and `r
 ```
 text-classifier/
 ├── README.md
-├── HOW_I_BUILT_IT.md     # how I made it (first person)
-├── BREAK_IT.md           # intentional break / diagnose / fix lab
+├── HOW_I_BUILT_IT.md     # first-person build story
+├── BREAK_IT.md           # intentional what-ifs lab
 ├── requirements.txt
 ├── .gitignore
 ├── train.py              # baseline + DistilBERT fine-tune + metrics
 ├── app.py                # Gradio demo
-├── explore.py            # quick EDA (class balance + a few examples)
+├── explore.py            # quick EDA (class balance + examples)
 ├── scripts/
 │   └── break_experiments.py  # safe baseline-only failure demos
 ├── results/
@@ -78,88 +84,47 @@ text-classifier/
 
 ---
 
-## How to run
-
-### 1. Setup
+## Setup & run
 
 ```bash
 cd text-classifier
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-```
 
-### 2. Explore the data (optional)
-
-```bash
+# optional EDA
 python explore.py
-```
 
-### 3. Train
-
-```bash
+# train baseline + DistilBERT, write results/metrics.json
 python train.py
-```
 
-This will:
-
-- Download the dataset via Hugging Face `datasets`
-- Train the TF-IDF baseline on the full train split
-- Fine-tune DistilBERT on a 3k stratified subset (2 epochs, CPU-friendly)
-- Write `results/metrics.json`, confusion-matrix PNGs, and save the model under `models/distilbert-sms-spam/`
-
-**Note:** First run downloads model weights and the dataset (~300MB). DistilBERT on CPU typically takes ~20–40 minutes for 2 epochs on 3k examples (depends on machine).
-
-### 4. Demo
-
-```bash
+# Gradio demo (needs models/distilbert-sms-spam/ from train.py)
 python app.py
 ```
 
-Open the Gradio URL (default `http://127.0.0.1:7860`). If the model folder is missing, the UI tells you to run `train.py` first.
+First run downloads dataset + model weights (~300MB). DistilBERT on CPU typically takes ~20–40 minutes for 2 epochs on 3k examples. Open the Gradio URL (default `http://127.0.0.1:7860`).
 
----
+Safe break-it demos (baseline only; never deletes the DistilBERT folder):
 
+```bash
+python scripts/break_experiments.py --list
+python scripts/break_experiments.py --all
+```
+
+Tested on Linux with Python 3.11–3.13, CPU-only. GPU is used automatically if available.
 
 ---
 
 ## Learn by breaking it
 
-I learn this project by reading how I built it, then intentionally breaking pieces and writing the what-ifs.
-
-| Doc | Purpose |
-|-----|---------|
-| [`HOW_I_BUILT_IT.md`](HOW_I_BUILT_IT.md) | First-person walkthrough: data → baseline → DistilBERT → eval → Gradio |
-| [`BREAK_IT.md`](BREAK_IT.md) | Lab guide — 13 experiments (wrong labels, tiny subset, no class weight, bad LR, …) |
-| [`scripts/break_experiments.py`](scripts/break_experiments.py) | Safe baseline-only demos (`--tiny-subset`, `--no-class-weight`, `--all`, …). **Never** deletes `models/distilbert-sms-spam/` |
-
-```bash
-source .venv/bin/activate
-python scripts/break_experiments.py --list
-python scripts/break_experiments.py --all
-```
-
-## Requirements
-
-See `requirements.txt` (Transformers, Datasets, scikit-learn, PyTorch CPU, Gradio, evaluate, accelerate, matplotlib/seaborn, pandas/numpy).
-
-Tested on Linux with Python 3.11–3.13, CPU-only. GPU is optional and will be used automatically if available.
+- [HOW_I_BUILT_IT.md](HOW_I_BUILT_IT.md) — first-person build story
+- [BREAK_IT.md](BREAK_IT.md) — intentional what-ifs, why it broke, how to fix
+- [scripts/break_experiments.py](scripts/break_experiments.py) — safe baseline-only demos (`--tiny-subset`, `--no-class-weight`, `--all`, …)
 
 ---
 
-## Design notes / honesty
+## License / notes
 
-- DistilBERT is trained on a **subset** so portfolio demos stay runnable without a GPU. Metrics are still on the full held-out test split.
-- Class imbalance is handled in the baseline via `class_weight="balanced"`; DistilBERT relies on the natural distribution plus F1 as the selection metric.
-- Model weights are **not** committed (see `.gitignore`). Always produce them with `train.py`.
-- This is educational spam classification — not a production phishing detector.
-
----
-
-## License
-
-Code in this repo is provided for portfolio / educational use. The SMS Spam Collection dataset follows its original UCI / Hugging Face licensing terms.
-
----
+Educational portfolio project. Not a production phishing detector. Model weights are not committed (see `.gitignore`); always produce them with `train.py`. The SMS Spam Collection dataset follows its original UCI / Hugging Face licensing terms.
 
 *Miles Robinson · Cybersecurity + AI Engineering · CPCC → UNC Charlotte · 2026*
